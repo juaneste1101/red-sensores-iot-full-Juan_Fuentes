@@ -1,7 +1,7 @@
+package repository;
+
 import model.LecturaSensor;
 import org.junit.jupiter.api.Test;
-import repository.RepositorioColeccion;
-import repository.Repositorio;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RepositorioColeccionTest {
@@ -16,7 +16,7 @@ public class RepositorioColeccionTest {
 
     @Test
     public void testAgregarAlInicio() {
-        RepositorioColeccion repo = new RepitorioColeccion();
+        RepositorioColeccion repo = new RepositorioColeccion();
         LecturaSensor a = new LecturaSensor("EST-001", "t0", 20, 50, 0);
         LecturaSensor b = new LecturaSensor("EST-002", "t1", 21, 51, 1);
         repo.agregarAlFinal(a);

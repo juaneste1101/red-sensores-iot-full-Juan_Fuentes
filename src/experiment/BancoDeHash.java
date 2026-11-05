@@ -149,6 +149,10 @@ public class BancoDeHash {
 
     private static LecturaSensor generarUnaLectura(int id) {
         // Simulamos timestamps con longitud fija para probar el hash
-        return new LecturaSensor("EST-" + (id % 10), "2026-03-02 07:00", 25.0 + Math.random(), 40.0 + Math.random());
+        return new LecturaSensor("EST-" + (id % 10),
+                "2026-03-02 07:00",
+                25.0 + Math.random(),
+                40.0 + Math.random(),
+                10 + Math.random());
     }
 }

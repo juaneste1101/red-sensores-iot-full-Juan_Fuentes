@@ -48,7 +48,7 @@ public class BancoDePersistencia {
         System.out.println("--- Experimento 2: El Separador Corrupto ---");
         String ruta = "test_separador.csv";
         List<LecturaSensor> lecturas = new ArrayList<>();
-        lecturas.add(new LecturaSensor("EST-001", "2026-01-01 10:00", 16.9, 76.4, 48.6, "OK", "revisado, sin novedad"));
+        lecturas.add(new LecturaSensor("EST-001", "2026-01-01 10:00", 16.9, 76.4, 48.6));
 
         AlmacenTexto almacen = new AlmacenTexto(ruta);
         try {
@@ -133,7 +133,7 @@ public class BancoDePersistencia {
     private static List<LecturaSensor> generarLecturas(int n) {
         List<LecturaSensor> lista = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            lista.add(new LecturaSensor("EST-" + (i % 100), "2026-03-02 07:00", 20.0+Math.random(), 70.0+Math.random(), 40.0+Math.random(), "OK", "Sín novedad"));
+            lista.add(new LecturaSensor("EST-" + (i % 100), "2026-03-02 07:00", 20.0+Math.random(), 70.0+Math.random(), 40.0+Math.random()));
         }
         return lista;
     }

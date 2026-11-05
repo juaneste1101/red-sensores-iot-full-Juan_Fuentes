@@ -32,9 +32,7 @@ public class AlmacenTexto {
                   .append(l.getTimestamp()).append(SEPARADOR)
                   .append(l.getPm25()).append(SEPARADOR)
                   .append(l.getTemperatura()).append(SEPARADOR)
-                  .append(l.getHumedad()).append(SEPARADOR)
-                  .append(l.getEstado()).append(SEPARADOR)
-                  .append(sanitizar(l.getObservacion()));
+                  .append(l.getHumedad());
 
                 escritor.write(sb.toString());
                 escritor.newLine();
