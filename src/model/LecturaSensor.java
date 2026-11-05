@@ -12,7 +12,7 @@
 
 package model;
 
-public class LecturaSensor {
+public class LecturaSensor implements java.io.Serializable {
 
     // Rangos fisicos aceptables. Constantes, no numeros magicos.
     public static final double TEMP_MIN = -40.0;
