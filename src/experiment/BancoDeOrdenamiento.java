@@ -1,27 +1,21 @@
-/* ============================================================
-   PLATAFORMA DE MONITOREO AMBIENTAL URBANO
-   BancoDeOrdenamiento - VERSION COMPLETA
-
-   Cinco experimentos. Los vas descomentando por fases.
-   Ejecuta:  java BancoDeOrdenamiento
-   ============================================================ */
-
 package experiment;
 
 import java.util.Random;
+
+import generator.GeneradorDatos;
 import model.LecturaSensor;
 import search.BuscadorLecturas;
 import sorting.Ordenador;
-import generator.GeneradorDatos;
 
+@SuppressWarnings("unused")
 public class BancoDeOrdenamiento {
 
     public static void main(String[] args) {
         experimentoUno();
-        // experimentoDos();     // <- FASE 2
-        // experimentoTres();    // <- FASE 3
+        // experimentoDos();    // <- FASE 2
+        // experimentoTres();  // <- FASE 3
         // experimentoCuatro(); // <- FASE 4
-        // experimentoCinco();   // <- FASE 5
+        // experimentoCinco();  // <- FASE 5
     }
 
     // ---------- utilidades ----------
@@ -149,8 +143,8 @@ public class BancoDeOrdenamiento {
             Ordenador.quickSortPivotePrimero(enOrden);
             reportar("QuickSort", System.currentTimeMillis() - t);
         } catch (StackOverflowError e) {
-            System.out.println("QuickSort      -> StackOverflowError: el programa se quedo sin pila.");
-            System.out.println("                  Comparaciones alcanzadas antes de morir: "
+            System.out.println("QuickSort         -> StackOverflowError: el programa se quedo sin pila.");
+            System.out.println("                 Comparaciones alcanzadas antes de morir: "
                     + String.format("%,d", Ordenador.getComparaciones()));
         }
         System.out.println();
@@ -169,11 +163,11 @@ public class BancoDeOrdenamiento {
         System.out.println("        Ordenado por timestamp: " + Ordenador.estaOrdenadoPorTimestamp(datos));
         int pos = BuscadorLecturas.busquedaBinariaPorTimestamp(datos, objetivo);
         System.out.println("        Consulta binaria por timestamp -> posicion: " + pos
-                + "  (comparaciones: " + BuscadorLecturas.getComparaciones() + ")");
+                + " (comparaciones: " + BuscadorLecturas.getComparaciones() + ")");
 
         System.out.println();
-        System.out.println("Paso 2. El area de comunicaciones pide el ranking de estaciones"
-                + " mas contaminadas. Ordenamos por PM2.5.");
+        System.out.println("Paso 2. El area de comunicaciones pide el ranking de estaciones");
+        System.out.println("        mas contaminadas. Ordenamos por PM2.5.");
         Ordenador.ordenarPorPm25(datos);
         System.out.println("        Ranking listo. PM2.5 mas bajo: " + datos[0].getPm25()
                 + " | mas alto: " + datos[datos.length - 1].getPm25());
@@ -183,7 +177,7 @@ public class BancoDeOrdenamiento {
         System.out.println("        Ordenado por timestamp: " + Ordenador.estaOrdenadoPorTimestamp(datos));
         pos = BuscadorLecturas.busquedaBinariaPorTimestamp(datos, objetivo);
         System.out.println("        Consulta binaria por timestamp -> posicion: " + pos
-                + "  (comparaciones: " + BuscadorLecturas.getComparaciones() + ")");
+                + " (comparaciones: " + BuscadorLecturas.getComparaciones() + ")");
 
         System.out.println();
         System.out.println("        Verificacion con busqueda lineal -> posicion: "

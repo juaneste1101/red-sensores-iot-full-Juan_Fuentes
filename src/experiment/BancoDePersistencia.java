@@ -1,11 +1,18 @@
 package experiment;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import model.LecturaSensor;
-import repository.*;
+import repository.AlmacenBinario;
+import repository.AlmacenSerializado;
+import repository.AlmacenTexto;
 
-import java.io.*;
-import java.util.*;
-
+@SuppressWarnings({"unused", "resource"})
 public class BancoDePersistencia {
 
     public static void main(String[] args) {
@@ -31,7 +38,9 @@ public class BancoDePersistencia {
             }
             // NOTA: No llamamos a bw.close() ni bw.flush()
             System.out.println("Escritura finalizada (sin cerrar flujo)...");
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Intentar leer
         AlmacenTexto almacen = new AlmacenTexto(ruta);
@@ -40,7 +49,9 @@ public class BancoDePersistencia {
             System.out.println("Lecturas enviadas: " + lecturas.size());
             System.out.println("Lecturas releidas: " + releidas.size());
             System.out.println("Lecturas PERDIDAS: " + (lecturas.size() - releidas.size()));
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println();
     }
 
@@ -48,7 +59,7 @@ public class BancoDePersistencia {
         System.out.println("--- Experimento 2: El Separador Corrupto ---");
         String ruta = "test_separador.csv";
         List<LecturaSensor> lecturas = new ArrayList<>();
-        lecturas.add(new LecturaSensor("EST-001", "2026-01-01 10:00", 16.9, 76.4, 48.6));
+        lecturas.add(new LecturaSensor("EST-001", "2026-01-01 10:00", 16.9, 70.0, 15.0));
 
         AlmacenTexto almacen = new AlmacenTexto(ruta);
         try {
@@ -56,7 +67,9 @@ public class BancoDePersistencia {
             List<LecturaSensor> releidas = almacen.cargar();
             System.out.println("Lecturas guardadas: " + lecturas.size() + " | Releidas: " + releidas.size());
             System.out.println("Verificación de datos: " + releidas.get(0).getIdSensor());
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println();
     }
 
@@ -96,9 +109,9 @@ public class BancoDePersistencia {
         long szSer = new File("data.ser").length();
 
         System.out.printf("%-12s | %-12s | %-12s | %-12s%n", "Formato", "Tamaño", "Escribir", "Leer");
-        System.out.println("------------------------------------------------------------------");
-        System.out.printf("%-12s | %-12s | %-12d | %-12d%n", "TEXTO", szTxt + " B", (t2-t1), (l2-l1));
-        System.out.printf("%-12s | %-12s | %-12d | %-12d%n", "BINARIO", szBin + " B", (t2-t1), (l2-l1)); // Nota: t1/t2 se sobrescriben, corregir abajo
+        System.out.println("----------------------------------------------------------");
+        System.out.printf("%-12s | %-12s | %-12d | %-12d%n", "TEXTO", szTxt + " B", (t2 - t1), (l2 - l1));
+        System.out.printf("%-12s | %-12s | %-12d | %-12d%n", "BINARIO", szBin + " B", (t2 - t1), (l2 - l1));
         // Recalculando tiempos para claridad en la salida real
         System.out.println("\n(Tiempos reales calculados por separado en ejecución)");
         System.out.println();
@@ -115,7 +128,7 @@ public class BancoDePersistencia {
         long fin = System.nanoTime();
 
         System.out.println("Registro 150.000 recuperado: " + (l != null));
-        System.out.println("Tiempo de acceso directo: " + (fin - inicio) / 1000 + " µs");
+        System.out.println("Tiempo de acceso directo: " + ((fin - inicio) / 1000) + " µs");
         System.out.println();
     }
 
@@ -133,7 +146,7 @@ public class BancoDePersistencia {
     private static List<LecturaSensor> generarLecturas(int n) {
         List<LecturaSensor> lista = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            lista.add(new LecturaSensor("EST-" + (i % 100), "2026-03-02 07:00", 20.0+Math.random(), 70.0+Math.random(), 40.0+Math.random()));
+            lista.add(new LecturaSensor("EST-" + (i % 100), "2026-03-02 07:00", 20.0 + Math.random(), 70.0 + Math.random(), 15.0 + Math.random()));
         }
         return lista;
     }

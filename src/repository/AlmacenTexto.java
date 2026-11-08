@@ -1,59 +1,55 @@
 package repository;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import model.LecturaSensor;
-import java.io.*;
-import java.util.*;
 
-/**
- * Implementación de persistencia en formato texto (CSV).
- * Demuestra la importancia del cierre de flujos y el manejo de separadores.
- */
+@SuppressWarnings("unused")
 public class AlmacenTexto {
-    private final String ruta;
+
+    private final String rutaArchivo;
     private static final String SEPARADOR = ",";
 
-    public AlmacenTexto(String ruta) {
-        this.ruta = ruta;
+    public AlmacenTexto(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
     }
 
-    /**
-     * Guarda una lista de lecturas en formato CSV.
-     * Implementado con try-with-resources para garantizar el vaciado del buffer.
-     */
     public void guardar(List<LecturaSensor> lecturas) throws IOException {
-        try (BufferedWriter escritor = new BufferedWriter(new FileWriter(ruta))) {
-            // Encabezado
-            escritor.write("idSensor,timestamp,pm25,temp,humedad,estado,observacion");
-            escritor.newLine();
-
-            for (LecturaSensor l : lecturas) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(l.getIdSensor()).append(SEPARADOR)
-                  .append(l.getTimestamp()).append(SEPARADOR)
-                  .append(l.getPm25()).append(SEPARADOR)
-                  .append(l.getTemperatura()).append(SEPARADOR)
-                  .append(l.getHumedad());
-
-                escritor.write(sb.toString());
-                escritor.newLine();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(rutaArchivo))) {
+            for (LecturaSensor lectura : lecturas) {
+                String linea = String.join(SEPARADOR,
+                        lectura.getIdSensor(),
+                        lectura.getTimestamp(),
+                        String.valueOf(lectura.getTemperatura()),
+                        String.valueOf(lectura.getHumedad()),
+                        String.valueOf(lectura.getPm25())
+                );
+                writer.write(linea);
+                writer.newLine();
             }
         }
     }
 
     public List<LecturaSensor> cargar() throws IOException {
         List<LecturaSensor> lecturas = new ArrayList<>();
-        try (BufferedReader lector = new BufferedReader(new FileReader(ruta))) {
-            String linea = lector.readLine(); // Saltar encabezado
-            while ((linea = lector.readLine()) != null) {
-                String[] campos = linea.split(SEPARADOR);
-                if (campos.length >= 5) {
-                    lecturas.add(new LecturaSensor(
-                        campos[0],
-                        campos[1],
-                        Double.parseDouble(campos[2]),
-                        Double.parseDouble(campos[3]),
-                        Double.parseDouble(campos[4])
-                    ));
+        try (BufferedReader reader = new BufferedReader(new FileReader(rutaArchivo))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                String[] partes = linea.split(SEPARADOR);
+                if (partes.length == 5) {
+                    LecturaSensor lectura = new LecturaSensor(
+                            partes[0],
+                            partes[1],
+                            Double.parseDouble(partes[2]),
+                            Double.parseDouble(partes[3]),
+                            Double.parseDouble(partes[4])
+                    );
+                    lecturas.add(lectura);
                 }
             }
         }
@@ -62,8 +58,6 @@ public class AlmacenTexto {
 
     private String sanitizar(String texto) {
         if (texto == null) return "";
-        // Solución simple: reemplazar el separador por un espacio
-        // En una versión profesional se usarían comillas (" ")
         return texto.replace(SEPARADOR, " ");
     }
 }

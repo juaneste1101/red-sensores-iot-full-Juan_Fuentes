@@ -1,12 +1,15 @@
 package experiment;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import model.ClaveLectura;
 import model.LecturaSensor;
 import repository.TablaHash;
 
-import java.util.*;
-import java.io.*;
-
+@SuppressWarnings("unused")
 public class BancoDeHash {
 
     public static void main(String[] args) {
@@ -39,7 +42,7 @@ public class BancoDeHash {
             long tiempoHashSet = fin - inicio;
 
             System.out.printf("N=%d | ArrayList: %d ms | HashSet: %d ms | Ratio: %.1fx%n",
-                n, tiempoArrayList, tiempoHashSet, (double)tiempoArrayList/tiempoHashSet);
+                    n, tiempoArrayList, tiempoHashSet, (double)tiempoArrayList/tiempoHashSet);
         }
         System.out.println();
     }
@@ -79,9 +82,9 @@ public class BancoDeHash {
         }
         long fin = System.currentTimeMillis();
 
-        System.out.println("Casillas vacias:            " + tabla.contarCasillasVacias() + " de " + tabla.numCasillas());
-        System.out.println("Cadena mas larga:           " + tabla.obtenerCadenaMasLarga());
-        System.out.println("Tiempo de insercion:        " + (fin - inicio) + " ms");
+        System.out.println("Casillas vacias:             " + tabla.contarCasillasVacias() + " de " + tabla.numCasillas());
+        System.out.println("Cadena mas larga:            " + tabla.obtenerCadenaMasLarga());
+        System.out.println("Tiempo de insercion:         " + (fin - inicio) + " ms");
         System.out.println();
     }
 
@@ -96,9 +99,9 @@ public class BancoDeHash {
             tabla.poner(new ClaveLectura(l.getIdSensor(), l.getTimestamp()), l);
         }
 
-        System.out.println("Elementos insertados:       " + tabla.tamano());
-        System.out.println("Casillas finales:           " + tabla.numCasillas());
-        System.out.println("Cadena mas larga:           " + tabla.obtenerCadenaMasLarga());
+        System.out.println("Elementos insertados:        " + tabla.tamano());
+        System.out.println("Casillas finales:            " + tabla.numCasillas());
+        System.out.println("Cadena mas larga:            " + tabla.obtenerCadenaMasLarga());
         System.out.println();
     }
 
@@ -156,3 +159,5 @@ public class BancoDeHash {
                 10 + Math.random());
     }
 }
+
+

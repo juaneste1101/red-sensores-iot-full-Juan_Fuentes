@@ -12,19 +12,18 @@
 package experiment;
 
 import java.util.ArrayList;
-import java.util.ArrayDeque;
 import java.util.Comparator;
-import java.util.Deque;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
+
+import generator.GeneradorDatos;
 import model.Alerta;
 import model.LecturaSensor;
-import generator.GeneradorDatos;
 
+@SuppressWarnings("unused")
 public class BancoDeColecciones {
 
     public static void main(String[] args) {
@@ -100,14 +99,14 @@ public class BancoDeColecciones {
         long t = System.currentTimeMillis();
         double suma = 0;
         for (int i = 0; i < lista.size(); i++) suma += lista.get(i).getPm25();
-        System.out.printf("   %-12s %,8d ms%n", nombre, System.currentTimeMillis() - t);
+        System.out.printf("   %-12s %,8d ms (Suma PM2.5: %.2f)%n", nombre, System.currentTimeMillis() - t, suma);
     }
 
     private static void medirRecorridoForEach(List<LecturaSensor> lista, String nombre) {
         long t = System.currentTimeMillis();
         double suma = 0;
         for (LecturaSensor l : lista) suma += l.getPm25();
-        System.out.printf("   %-12s %,8d ms%n", nombre, System.currentTimeMillis() - t);
+        System.out.printf("   %-12s %,8d ms (Suma PM2.5: %.2f)%n", nombre, System.currentTimeMillis() - t, suma);
     }
 
     // ---------- EXPERIMENTO 3 ----------

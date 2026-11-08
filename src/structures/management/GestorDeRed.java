@@ -1,145 +1,220 @@
 package structures.management;
 
+import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import model.Alerta;
 import model.LecturaSensor;
-import java.util.*;
-import java.util.stream.Collectors;
 
-/**
- * GestorDeRed - Módulo Integrador de Estructuras de Datos
- * VERSION ESTUDIANTE
- *
- * Objetivo: Implementar la gestión de la red utilizando las colecciones de Java (JCF).
- * El éxito de este módulo no es solo que el código compile, sino que elijas
- * la estructura correcta para cada problema.
- */
 public class GestorDeRed {
-    // 1. Historial de Eventos: Registro lineal de todas las actividades
-    private List<String> historialEventos;
 
-    // 2. Navegador de Alertas: Permite moverse adelante y atrás entre alertas
-    private Deque<String> navegadorAlertas;
-    private String alertaActual;
+    // Reto 1 & 10: Historial de eventos (List)
+    private final List<String> historialEventos;
 
-    // 3. Ciclo de Monitoreo: Gestión de la rotación de sensores a consultar
-    private Queue<String> colaMonitoreo;
+    // Retos 2 & 3: Navegación de alertas (Deque)
+    private final Deque<Alerta> colaAlertas;
+    private final List<Alerta> historialAlertasNavegacion;
+    private int indiceAlertaActual;
 
-    // 4. Topología de la Red: Grafo de conexiones entre estaciones (Lista de adyacencia)
-    private Map<String, List<String>> topologiaRed;
+    // Reto 4: Programación de consultas sin duplicados (Set)
+    private final Set<String> consultasProgramadas;
 
-    // 5. Buffer de Ingesta: Cola de espera para procesar lecturas entrantes
-    private Queue<LecturaSensor> bufferIngesta;
+    // Reto 5: Rotación de sensores (Queue)
+    private final Queue<String> colaSensores;
+
+    // Retos 6, 7 & 9: Grafo de adyacencia de la red de sensores (Map)
+    private final Map<String, List<String>> redConexiones;
+
+    // Reto 8: Ingesta y procesamiento de lecturas FIFO (Queue)
+    private final Queue<LecturaSensor> colaLecturas;
 
     public GestorDeRed() {
-        // TODO: Inicializa las colecciones usando las implementaciones más adecuadas de Java
-        // (ArrayList, ArrayDeque, HashMap, etc.)
         this.historialEventos = new ArrayList<>();
-        this.navegadorAlertas = new ArrayDeque<>();
-        this.colaMonitoreo = new ArrayDeque<>();
-        this.topologiaRed = new HashMap<>();
-        this.bufferIngesta = new ArrayDeque<>();
+        this.colaAlertas = new ArrayDeque<>();
+        this.historialAlertasNavegacion = new ArrayList<>();
+        this.indiceAlertaActual = -1;
+        this.consultasProgramadas = new LinkedHashSet<>();
+        this.colaSensores = new LinkedList<>();
+        this.redConexiones = new HashMap<>();
+        this.colaLecturas = new LinkedList<>();
     }
 
     // =========================================================================
-    // SECCIÓN 1: HISTORIAL Y EVENTOS
+    // RETO 1: Historial de eventos
+    // Concatena fecha/hora actual mediante new Date()
     // =========================================================================
-
     public void agregarEvento(String evento) {
-        // TODO 1: Implementar la adición del evento al historial.
-        // Debe registrarse la fecha/hora actual junto con la descripción del evento.
-        // Ejemplo: "[2026-10-24 10:00] Sensor EST-01 activado"
-    }
-
-    public List<String> obtenerEventosRecientes(int limite) {
-        if (historialEventos.size() <= limite) return new ArrayList<>(historialEventos);
-        return historialEventos.subList(historialEventos.size() - limite, historialEventos.size());
-    }
-
-    public void limpiarHistorialAntiguo(int mantener) {
-        // TODO 10: Implementar la optimización del historial.
-        // Eliminar los registros más antiguos para mantener solo los últimos 'mantener' eventos.
+        if (evento != null && !evento.trim().isEmpty()) {
+            String registroConFecha = new Date() + " - " + evento;
+            historialEventos.add(registroConFecha);
+        }
     }
 
     // =========================================================================
-    // SECCIÓN 2: NAVEGACIÓN DE ALERTAS
+    // RETOS 2 & 3: Navegación de alertas
+    // Desplazamiento hacia adelante y atrás mediante Deque / Lista indexada
     // =========================================================================
-
-    public void registrarAlerta(String alerta) {
-        navegadorAlertas.addLast(alerta);
-        alertaActual = alerta;
+    public void registrarAlerta(Alerta alerta) {
+        if (alerta != null) {
+            colaAlertas.addLast(alerta);
+            historialAlertasNavegacion.add(alerta);
+            if (indiceAlertaActual == -1) {
+                indiceAlertaActual = 0;
+            }
+        }
     }
 
-    public String navegarAlSiguiente() {
-        // TODO 2: Implementar la lógica de desplazamiento hacia adelante.
-        // Debe devolver la siguiente alerta o null si no hay más.
-        // Recuerda actualizar el estado de 'alertaActual'.
-        return null;
+    public Alerta navegarAlSiguiente() {
+        if (historialAlertasNavegacion.isEmpty() || indiceAlertaActual >= historialAlertasNavegacion.size() - 1) {
+            return null;
+        }
+        indiceAlertaActual++;
+        return historialAlertasNavegacion.get(indiceAlertaActual);
     }
 
-    public String navegarAlAnterior() {
-        // TODO 3: Implementar la lógica de desplazamiento hacia atrás.
-        // Debe devolver la alerta anterior o null si es la primera.
-        // Recuerda actualizar el estado de 'alertaActual'.
-        return null;
+    public Alerta navegarAlAnterior() {
+        if (historialAlertasNavegacion.isEmpty() || indiceAlertaActual <= 0) {
+            return null;
+        }
+        indiceAlertaActual--;
+        return historialAlertasNavegacion.get(indiceAlertaActual);
     }
 
-    public String getAlertaActual() { return alertaActual; }
+    // =========================================================================
+    // RETO 4: Programación de consultas
+    // Evita IDs duplicados garantizando unicidad con Set
+    // =========================================================================
+    public boolean programarConsulta(String idSensor) {
+        if (idSensor == null || idSensor.trim().isEmpty()) {
+            return false;
+        }
+        return consultasProgramadas.add(idSensor);
+    }
 
     // =========================================================================
-    // SECCIÓN 3: CICLO DE MONITOREO
+    // RETO 5: Rotación de sensores
+    // Gestiona la rotación de una cola circular extraendola e insertándola al final
     // =========================================================================
-
-    public void programarConsulta(String idSensor) {
-        // TODO 4: Implementar la programación de la consulta.
-        // El sensor debe agregarse a la cola solo si NO está ya programado.
+    public void registrarSensorParaRotacion(String idSensor) {
+        if (idSensor != null && !idSensor.trim().isEmpty()) {
+            colaSensores.offer(idSensor);
+        }
     }
 
     public String obtenerSiguienteSensor() {
-        // TODO 5: Implementar la rotación del ciclo.
-        // Debe extraer el sensor del frente de la cola y volverlo a insertar al final
-        // para garantizar que todos los sensores sean consultados continuamente.
-        return null;
+        if (colaSensores.isEmpty()) {
+            return null;
+        }
+        String siguiente = colaSensores.poll();
+        colaSensores.offer(siguiente);
+        return siguiente;
     }
 
     // =========================================================================
-    // SECCIÓN 4: TOPOLOGÍA DE RED
+    // RETO 6: Registro de conexiones
+    // Registra conexiones bidireccionales entre nodos de sensores
     // =========================================================================
-
     public void registrarConexion(String sensorA, String sensorB) {
-        // TODO 6: Implementar la conexión bidireccional entre dos sensores.
-        // Debe agregar sensorB a la lista de vecinos de sensorA, y viceversa.
-        // Asegurar que no se creen conexiones duplicadas.
+        if (sensorA == null || sensorB == null || sensorA.equals(sensorB)) {
+            return;
+        }
+        redConexiones.computeIfAbsent(sensorA, k -> new ArrayList<>());
+        redConexiones.computeIfAbsent(sensorB, k -> new ArrayList<>());
+
+        if (!redConexiones.get(sensorA).contains(sensorB)) {
+            redConexiones.get(sensorA).add(sensorB);
+        }
+        if (!redConexiones.get(sensorB).contains(sensorA)) {
+            redConexiones.get(sensorB).add(sensorA);
+        }
     }
 
+    // =========================================================================
+    // RETO 7: Consulta de vecinos
+    // Consulta sensores adyacentes usando getOrDefault
+    // =========================================================================
     public List<String> obtenerVecinos(String idSensor) {
-        // TODO 7: Implementar la consulta de conexiones.
-        // Debe devolver la lista de sensores conectados al idSensor proporcionado.
-        // Retornar una lista vacía si el sensor no tiene conexiones.
-        return null;
-    }
-
-    public List<String> detectarEstacionesAisladas() {
-        // TODO 9: Implementar la detección de nodos huérfanos.
-        // Debe retornar una lista de todos los sensores registrados que no tienen ninguna conexión.
-        return null;
+        if (idSensor == null) {
+            return Collections.emptyList();
+        }
+        return redConexiones.getOrDefault(idSensor, Collections.emptyList());
     }
 
     // =========================================================================
-    // SECCIÓN 5: BUFFER DE INGESTA
+    // RETO 8: Procesamiento de lecturas
+    // Procesa lecturas en estricto orden FIFO utilizando poll()
     // =========================================================================
-
-    public void recibirLectura(LecturaSensor lectura) {
-        bufferIngesta.add(lectura);
+    public void encolarLectura(LecturaSensor lectura) {
+        if (lectura != null) {
+            colaLecturas.offer(lectura);
+        }
     }
 
     public LecturaSensor procesarSiguienteLectura() {
-        // TODO 8: Implementar la extracción del buffer.
-        // Debe remover y devolver la lectura más antigua del buffer (FIFO).
-        return null;
+        return colaLecturas.poll();
     }
 
-    public List<LecturaSensor> filtrarAlertasCriticas(double limitePm25) {
-        // TODO EXTRA: Usar Streams para filtrar lecturas con PM2.5 superior al límite.
-        // Debe retornar una lista con las lecturas filtradas.
-        return null;
+    // =========================================================================
+    // RETO 9: Detección de estaciones aisladas
+    // Identifica estaciones en la red que no posean conexiones registradas
+    // =========================================================================
+    public List<String> detectarEstacionesAisladas() {
+        List<String> aisladas = new ArrayList<>();
+        for (Map.Entry<String, List<String>> entrada : redConexiones.entrySet()) {
+            if (entrada.getValue() == null || entrada.getValue().isEmpty()) {
+                aisladas.add(entrada.getKey());
+            }
+        }
+        return aisladas;
+    }
+
+    // =========================================================================
+    // RETO 10: Limpieza del historial
+    // Conserva únicamente los N registros más recientes y elimina los antiguos
+    // =========================================================================
+    public void limpiarHistorialAntiguo(int mantener) {
+        if (mantener <= 0) {
+            historialEventos.clear();
+            return;
+        }
+        while (historialEventos.size() > mantener) {
+            historialEventos.remove(0);
+        }
+    }
+
+    // =========================================================================
+    // Métodos consultores de estado (Getters)
+    // =========================================================================
+    public List<String> getHistorialEventos() {
+        return historialEventos;
+    }
+
+    public Deque<Alerta> getColaAlertas() {
+        return colaAlertas;
+    }
+
+    public Set<String> getConsultasProgramadas() {
+        return consultasProgramadas;
+    }
+
+    public Queue<String> getColaSensores() {
+        return colaSensores;
+    }
+
+    public Map<String, List<String>> getRedConexiones() {
+        return redConexiones;
+    }
+
+    public Queue<LecturaSensor> getColaLecturas() {
+        return colaLecturas;
     }
 }

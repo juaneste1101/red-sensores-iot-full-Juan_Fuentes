@@ -1,6 +1,5 @@
-import experiment.BancoDeOrdenamiento;
+package experiment;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class BancoDeOrdenamientoTest {
 

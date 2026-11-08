@@ -1,11 +1,3 @@
-/* ============================================================
-   PLATAFORMA DE MONITOREO AMBIENTAL URBANO
-   BancoDeListas - VERSION COMPLETA
-
-   Cinco experimentos. Se descomentan por fases.
-   Ejecuta:  java BancoDeListas
-   ============================================================ */
-
 package experiment;
 
 import model.LecturaSensor;
@@ -14,14 +6,15 @@ import repository.RepositorioArreglo;
 import repository.RepositorioEnlazado;
 import generator.GeneradorDatos;
 
+@SuppressWarnings("unused")
 public class BancoDeListas {
 
     public static void main(String[] args) {
         experimentoUno();
-        // experimentoDos();     // <- FASE 2
-        // experimentoTres();    // <- FASE 3
+        // experimentoDos();    // <- FASE 2
+        // experimentoTres();  // <- FASE 3
         // experimentoCuatro(); // <- FASE 4
-        // experimentoCinco();   // <- FASE 5
+        // experimentoCinco();  // <- FASE 5
     }
 
     // ---------- EXPERIMENTO 1 ----------
@@ -53,15 +46,16 @@ public class BancoDeListas {
         for (LecturaSensor l : GeneradorDatos.generar(10)) {
             lista.agregarAlFinal(l);
         }
+
         System.out.println("Antes de eliminar:");
-        System.out.println("   tamano() dice:        " + lista.tamano());
-        System.out.println("   nodos que hay:        " + lista.contarRecorriendo());
+        System.out.println("  tamano() dice:           " + lista.tamano());
+        System.out.println("  nodos que hay:          " + lista.contarRecorriendo());
 
         lista.eliminar(5);
 
         System.out.println("Despues de eliminar la posicion 5:");
-        System.out.println("   tamano() dice:        " + lista.tamano());
-        System.out.println("   nodos que hay:        " + lista.contarRecorriendo());
+        System.out.println("  tamano() dice:           " + lista.tamano());
+        System.out.println("  nodos que hay:          " + lista.contarRecorriendo());
         System.out.println();
         System.out.println("Se pidio eliminar UNA lectura. Cuenta cuantas desaparecieron.");
         System.out.println();
@@ -150,7 +144,7 @@ public class BancoDeListas {
         long saltosBinaria = RepositorioEnlazado.getSaltos();
 
         System.out.println("Buscando la ultima lectura de " + String.format("%,d", n) + ":");
-        System.out.printf("   Busqueda LINEAL  -> posicion %d, saltos entre nodos: %,d%n",
+        System.out.printf("   Busqueda LINEAL -> posicion %d, saltos entre nodos: %,d%n",
                 posLineal, saltosLineal);
         System.out.printf("   Busqueda BINARIA -> posicion %d, saltos entre nodos: %,d%n",
                 posBinaria, saltosBinaria);

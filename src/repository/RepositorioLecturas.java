@@ -1,17 +1,3 @@
-/* ============================================================
-   PLATAFORMA DE MONITOREO AMBIENTAL URBANO
-   TAD RepositorioLecturas - VERSION 0.1 INCOMPLETA
-
-   Este es el Tipo Abstracto de Dato del semestre: quien lo usa
-   solo conoce las operaciones publicas de abajo. NO deberia
-   saber que por dentro hay un arreglo.
-
-   Ese es el contrato. Respetalo mientras lo completas.
-
-   ADVERTENCIA: esta version corre sin caerse y entrega
-   resultados incorrectos. Tu trabajo de hoy es descubrir en
-   que miente antes de arreglarla.
-   ============================================================ */
 
 package repository;
 
