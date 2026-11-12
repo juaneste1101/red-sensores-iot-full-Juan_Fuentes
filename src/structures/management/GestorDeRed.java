@@ -1,7 +1,7 @@
 package structures.management;
 
-import java.util.ArrayList;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Deque;
@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import model.Alerta;
 import model.LecturaSensor;
 
 public class GestorDeRed {
@@ -20,9 +19,9 @@ public class GestorDeRed {
     // Reto 1 & 10: Historial de eventos (List)
     private final List<String> historialEventos;
 
-    // Retos 2 & 3: Navegación de alertas (Deque)
-    private final Deque<Alerta> colaAlertas;
-    private final List<Alerta> historialAlertasNavegacion;
+    // Retos 2 & 3: Navegación de alertas (Deque / Lista indexada)
+    private final Deque<String> colaAlertas;
+    private final List<String> historialAlertasNavegacion;
     private int indiceAlertaActual;
 
     // Reto 4: Programación de consultas sin duplicados (Set)
@@ -59,12 +58,20 @@ public class GestorDeRed {
         }
     }
 
+    public List<String> obtenerEventosRecientes(int cantidad) {
+        if (cantidad <= 0 || historialEventos.isEmpty()) {
+            return Collections.emptyList();
+        }
+        int inicio = Math.max(0, historialEventos.size() - cantidad);
+        return new ArrayList<>(historialEventos.subList(inicio, historialEventos.size()));
+    }
+
     // =========================================================================
     // RETOS 2 & 3: Navegación de alertas
-    // Desplazamiento hacia adelante y atrás mediante Deque / Lista indexada
+    // Desplazamiento hacia adelante y atrás
     // =========================================================================
-    public void registrarAlerta(Alerta alerta) {
-        if (alerta != null) {
+    public void registrarAlerta(String alerta) {
+        if (alerta != null && !alerta.trim().isEmpty()) {
             colaAlertas.addLast(alerta);
             historialAlertasNavegacion.add(alerta);
             if (indiceAlertaActual == -1) {
@@ -73,7 +80,7 @@ public class GestorDeRed {
         }
     }
 
-    public Alerta navegarAlSiguiente() {
+    public String navegarAlSiguiente() {
         if (historialAlertasNavegacion.isEmpty() || indiceAlertaActual >= historialAlertasNavegacion.size() - 1) {
             return null;
         }
@@ -81,7 +88,7 @@ public class GestorDeRed {
         return historialAlertasNavegacion.get(indiceAlertaActual);
     }
 
-    public Alerta navegarAlAnterior() {
+    public String navegarAlAnterior() {
         if (historialAlertasNavegacion.isEmpty() || indiceAlertaActual <= 0) {
             return null;
         }
@@ -91,25 +98,23 @@ public class GestorDeRed {
 
     // =========================================================================
     // RETO 4: Programación de consultas
-    // Evita IDs duplicados garantizando unicidad con Set
+    // Evita IDs duplicados con Set y encola sensores nuevos para rotación
     // =========================================================================
     public boolean programarConsulta(String idSensor) {
         if (idSensor == null || idSensor.trim().isEmpty()) {
             return false;
         }
-        return consultasProgramadas.add(idSensor);
+        if (consultasProgramadas.add(idSensor)) {
+            colaSensores.offer(idSensor);
+            return true;
+        }
+        return false;
     }
 
     // =========================================================================
     // RETO 5: Rotación de sensores
-    // Gestiona la rotación de una cola circular extraendola e insertándola al final
+    // Extrae el frente de la cola y lo vuelve a insertar al final
     // =========================================================================
-    public void registrarSensorParaRotacion(String idSensor) {
-        if (idSensor != null && !idSensor.trim().isEmpty()) {
-            colaSensores.offer(idSensor);
-        }
-    }
-
     public String obtenerSiguienteSensor() {
         if (colaSensores.isEmpty()) {
             return null;
@@ -151,9 +156,9 @@ public class GestorDeRed {
 
     // =========================================================================
     // RETO 8: Procesamiento de lecturas
-    // Procesa lecturas en estricto orden FIFO utilizando poll()
+    // Encola y procesa lecturas en estricto orden FIFO utilizando poll()
     // =========================================================================
-    public void encolarLectura(LecturaSensor lectura) {
+    public void recibirLectura(LecturaSensor lectura) {
         if (lectura != null) {
             colaLecturas.offer(lectura);
         }
@@ -167,6 +172,12 @@ public class GestorDeRed {
     // RETO 9: Detección de estaciones aisladas
     // Identifica estaciones en la red que no posean conexiones registradas
     // =========================================================================
+    public void registrarEstacion(String idSensor) {
+        if (idSensor != null && !idSensor.trim().isEmpty()) {
+            redConexiones.putIfAbsent(idSensor, new ArrayList<>());
+        }
+    }
+
     public List<String> detectarEstacionesAisladas() {
         List<String> aisladas = new ArrayList<>();
         for (Map.Entry<String, List<String>> entrada : redConexiones.entrySet()) {
@@ -198,7 +209,7 @@ public class GestorDeRed {
         return historialEventos;
     }
 
-    public Deque<Alerta> getColaAlertas() {
+    public Deque<String> getColaAlertas() {
         return colaAlertas;
     }
 
